@@ -1,16 +1,32 @@
-# React + Vite
+# 🏥 Subscription Home Care Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A modern web application designed to provide subscription-based home healthcare services, caretaking, and medical support for patients and elderly individuals at home.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Key Features
 
-## React Compiler
+- **User Authentication:** Secure Login and Registration for users and caregivers.
+- **Subscription Plans:** Flexible home-care subscription packages (Monthly / Quarterly / Yearly).
+- **Service Booking:** Easy scheduling for nursing, elderly care, and physiotherapy services.
+- **Dashboard & Management:** Track ongoing subscriptions, appointment history, and caregiver details.
+- **Responsive Design:** Smooth and accessible user interface across desktop and mobile devices.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Frontend:** React.js, HTML5, CSS3 / Tailwind CSS / Bootstrap
+- **Routing & State Management:** React Router Dom, Context API / Redux
+- **Backend / Storage:** Node.js / LocalStorage (or your backend tech)
+- **Deployment:** Vercel / GitHub Pages
+
+---
+
+## 🚀 How to Run Locally
+
+Follow these steps to run the project on your local machine:
+
+### 1. Clone the repository
+```bash
+git clone [https://github.com/vpooja363/subscription-home-care-platform.git](https://github.com/vpooja363/subscription-home-care-platform.git)
