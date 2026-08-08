@@ -17,8 +17,12 @@ function Dashboard() {
     oxygenLevel: "98%",
   });
 
-  // Fetch updated plan whenever dashboard loads
+  // NEW: State to store the latest booking
+  const [latestBooking, setLatestBooking] = useState(null);
+
+  // Fetch updated plan and bookings whenever dashboard loads
   useEffect(() => {
+    // 1. Fetch Subscription Plan
     const savedName = localStorage.getItem("activePlanName");
     const savedPrice = localStorage.getItem("activePlanPrice");
     const savedTagline = localStorage.getItem("activePlanTagline");
@@ -29,6 +33,13 @@ function Dashboard() {
         price: savedPrice,
         tagline: savedTagline || "Active Home Healthcare Subscription",
       });
+    }
+
+    // 2. Fetch Bookings from LocalStorage
+    const savedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    if (savedBookings.length > 0) {
+      // Array ki aakhri (sabse latest) booking ko state mein set karein
+      setLatestBooking(savedBookings[savedBookings.length - 1]);
     }
   }, []);
 
@@ -41,7 +52,10 @@ function Dashboard() {
             <span className="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill small fw-semibold mb-2">
               Patient Portal & Family View
             </span>
-            <h1 className="fw-bold mb-1">Rajeshwar Sharma's Care Dashboard</h1>
+            {/* Header mein dynamic patient name dikhane ki koshish (agar booking hai) */}
+            <h1 className="fw-bold mb-1">
+              {latestBooking ? `${latestBooking.patientName}'s Care Dashboard` : "Rajeshwar Sharma's Care Dashboard"}
+            </h1>
             <p className="text-muted small mb-0">
               Real-time home healthcare monitoring and active subscription summary.
             </p>
@@ -122,17 +136,31 @@ function Dashboard() {
             <div className="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="fw-bold mb-0">📅 Upcoming Scheduled Visit</h6>
-                <span className="badge bg-primary-subtle text-primary">Confirmed</span>
+                {latestBooking && <span className="badge bg-primary-subtle text-primary">Confirmed</span>}
               </div>
-              <div className="bg-light p-3 rounded-3 mb-3">
-                <h6 className="fw-bold mb-1">Routine Checkup & Vitals Monitoring</h6>
-                <p className="text-muted small mb-2">
-                  <strong>Date:</strong> Tomorrow, 09:00 AM - 11:00 AM
-                </p>
-                <div className="d-flex align-items-center gap-2 small">
-                  <span>👩‍⚕️ Assigned Nurse: <strong>Sr. Anita Verma</strong> (ICU Specialist)</span>
+              
+              {/* Dynamic Booking Data Check */}
+              {latestBooking ? (
+                <div className="bg-light p-3 rounded-3 mb-3">
+                  <h6 className="fw-bold mb-1">{latestBooking.serviceType}</h6>
+                  <p className="text-muted small mb-2">
+                    <strong>Patient:</strong> {latestBooking.patientName} ({latestBooking.phone}) <br/>
+                    <strong>Date:</strong> {latestBooking.date} <br/>
+                    <strong>Time:</strong> {latestBooking.timeSlot}
+                  </p>
+                  <div className="d-flex align-items-center gap-2 small mb-2">
+                    <span>👩‍⚕️ Professional Assigned (ID): <strong>{latestBooking.caregiverId}</strong></span>
+                  </div>
+                  <p className="text-muted small mb-0">
+                    <strong>Address:</strong> {latestBooking.address}
+                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-light p-4 rounded-3 mb-3 text-center">
+                  <p className="text-muted small mb-0">No upcoming visits scheduled yet.</p>
+                </div>
+              )}
+
               <Link to="/booking" className="btn btn-outline-primary w-100 rounded-pill py-2 small fw-semibold">
                 Reschedule or Book Another Visit
               </Link>
