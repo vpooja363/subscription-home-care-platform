@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
-  // State to load dynamically selected subscription plan from localStorage
   const [activePlan, setActivePlan] = useState({
     name: "Gold Plan",
     price: "₹9,999",
     tagline: "Dedicated Senior & Elderly Care",
   });
 
-  // Demo state for patient health vitals
   const [vitals, setVitals] = useState({
     bloodPressure: "128/82 mmHg",
     bloodSugar: "110 mg/dL",
@@ -17,10 +15,9 @@ function Dashboard() {
     oxygenLevel: "98%",
   });
 
-  // NEW: State to store the latest booking
-  const [latestBooking, setLatestBooking] = useState(null);
+  // NEW: Ab hum sirf ek nahi, balki saari bookings ko save karenge
+  const [allBookings, setAllBookings] = useState([]);
 
-  // Fetch updated plan and bookings whenever dashboard loads
   useEffect(() => {
     // 1. Fetch Subscription Plan
     const savedName = localStorage.getItem("activePlanName");
@@ -35,12 +32,9 @@ function Dashboard() {
       });
     }
 
-    // 2. Fetch Bookings from LocalStorage
+    // 2. LocalStorage se saari bookings fetch karein
     const savedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    if (savedBookings.length > 0) {
-      // Array ki aakhri (sabse latest) booking ko state mein set karein
-      setLatestBooking(savedBookings[savedBookings.length - 1]);
-    }
+    setAllBookings(savedBookings); // Poori list set kar di
   }, []);
 
   return (
@@ -52,10 +46,7 @@ function Dashboard() {
             <span className="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill small fw-semibold mb-2">
               Patient Portal & Family View
             </span>
-            {/* Header mein dynamic patient name dikhane ki koshish (agar booking hai) */}
-            <h1 className="fw-bold mb-1">
-              {latestBooking ? `${latestBooking.patientName}'s Care Dashboard` : "Rajeshwar Sharma's Care Dashboard"}
-            </h1>
+            <h1 className="fw-bold mb-1">My Care Dashboard</h1>
             <p className="text-muted small mb-0">
               Real-time home healthcare monitoring and active subscription summary.
             </p>
@@ -70,9 +61,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* ==========================================
-            1. DYNAMIC ACTIVE SUBSCRIPTION BANNER
-        ========================================== */}
+        {/* 1. DYNAMIC ACTIVE SUBSCRIPTION BANNER */}
         <div className="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-start border-5 border-primary">
           <div className="row align-items-center">
             <div className="col-md-8 mb-3 mb-md-0">
@@ -93,9 +82,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* ==========================================
-            2. HEALTH VITALS CARDS (BP, Sugar, etc.)
-        ========================================== */}
+        {/* 2. HEALTH VITALS CARDS */}
         <h5 className="fw-bold mb-3">🩺 Today's Health Vitals Summary</h5>
         <div className="row g-3 mb-5">
           <div className="col-6 col-lg-3">
@@ -128,41 +115,42 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* ==========================================
-            3. UPCOMING BOOKED VISITS & CARE LOGS
-        ========================================== */}
+        {/* 3. UPCOMING BOOKED VISITS & CARE LOGS */}
         <div className="row g-4">
           <div className="col-lg-6">
             <div className="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h6 className="fw-bold mb-0">📅 Upcoming Scheduled Visit</h6>
-                {latestBooking && <span className="badge bg-primary-subtle text-primary">Confirmed</span>}
+                <h6 className="fw-bold mb-0">📅 All Scheduled Visits</h6>
+                <span className="badge bg-primary-subtle text-primary">{allBookings.length} Confirmed</span>
               </div>
               
-              {/* Dynamic Booking Data Check */}
-              {latestBooking ? (
-                <div className="bg-light p-3 rounded-3 mb-3">
-                  <h6 className="fw-bold mb-1">{latestBooking.serviceType}</h6>
-                  <p className="text-muted small mb-2">
-                    <strong>Patient:</strong> {latestBooking.patientName} ({latestBooking.phone}) <br/>
-                    <strong>Date:</strong> {latestBooking.date} <br/>
-                    <strong>Time:</strong> {latestBooking.timeSlot}
-                  </p>
-                  <div className="d-flex align-items-center gap-2 small mb-2">
-                    <span>👩‍⚕️ Professional Assigned (ID): <strong>{latestBooking.caregiverId}</strong></span>
+              {/* Yahan saari bookings loop (map) ho rahi hain */}
+              <div style={{ maxHeight: "400px", overflowY: "auto", paddingRight: "5px" }}>
+                {allBookings.length > 0 ? (
+                  allBookings.slice().reverse().map((booking, index) => (
+                    <div key={index} className="bg-light p-3 rounded-3 mb-3 border-start border-4 border-primary">
+                      <h6 className="fw-bold mb-1">{booking.serviceType}</h6>
+                      <p className="text-muted small mb-2">
+                        <strong>Patient:</strong> {booking.patientName} ({booking.phone}) <br/>
+                        <strong>Date:</strong> {booking.date} | <strong>Time:</strong> {booking.timeSlot}
+                      </p>
+                      <div className="d-flex align-items-center gap-2 small mb-2">
+                        <span>👩‍⚕️ Professional ID: <strong>{booking.caregiverId}</strong></span>
+                      </div>
+                      <p className="text-muted small mb-0">
+                        <strong>Address:</strong> {booking.address}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-light p-4 rounded-3 mb-3 text-center">
+                    <p className="text-muted small mb-0">No upcoming visits scheduled yet.</p>
                   </div>
-                  <p className="text-muted small mb-0">
-                    <strong>Address:</strong> {latestBooking.address}
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-light p-4 rounded-3 mb-3 text-center">
-                  <p className="text-muted small mb-0">No upcoming visits scheduled yet.</p>
-                </div>
-              )}
+                )}
+              </div>
 
-              <Link to="/booking" className="btn btn-outline-primary w-100 rounded-pill py-2 small fw-semibold">
-                Reschedule or Book Another Visit
+              <Link to="/booking" className="btn btn-outline-primary w-100 rounded-pill py-2 mt-3 small fw-semibold">
+                + Book Another Visit
               </Link>
             </div>
           </div>
@@ -184,13 +172,6 @@ function Dashboard() {
                     <div className="text-muted">By Dr. Amit Patel</div>
                   </div>
                   <span className="text-muted">Yesterday</span>
-                </li>
-                <li className="list-group-item px-0 py-2 d-flex justify-content-between">
-                  <div>
-                    <strong>Weekly Doctor Video Consultation</strong>
-                    <div className="text-muted">Vitals reviewed - Normal</div>
-                  </div>
-                  <span className="text-muted">3 days ago</span>
                 </li>
               </ul>
             </div>
