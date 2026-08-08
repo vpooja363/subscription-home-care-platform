@@ -15,7 +15,6 @@ function Dashboard() {
     oxygenLevel: "98%",
   });
 
-  // NEW: Ab hum sirf ek nahi, balki saari bookings ko save karenge
   const [allBookings, setAllBookings] = useState([]);
 
   useEffect(() => {
@@ -32,10 +31,19 @@ function Dashboard() {
       });
     }
 
-    // 2. LocalStorage se saari bookings fetch karein
+    // 2. Fetch Bookings
     const savedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    setAllBookings(savedBookings); // Poori list set kar di
+    setAllBookings(savedBookings);
   }, []);
+
+  // NEW FEATURE: Saari bookings delete karne ka function
+  const clearAllBookings = () => {
+    // Ek confirmation message dikhayenge delete karne se pehle
+    if (window.confirm("Are you sure you want to delete all bookings? This cannot be undone.")) {
+      localStorage.removeItem("bookings"); // LocalStorage se data uda diya
+      setAllBookings([]); // Screen se bhi list khali kar di
+    }
+  };
 
   return (
     <div className="dashboard-page py-5 bg-light min-vh-100">
@@ -121,10 +129,17 @@ function Dashboard() {
             <div className="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="fw-bold mb-0">📅 All Scheduled Visits</h6>
-                <span className="badge bg-primary-subtle text-primary">{allBookings.length} Confirmed</span>
+                <div>
+                  <span className="badge bg-primary-subtle text-primary me-2">{allBookings.length} Confirmed</span>
+                  {/* Delete All Button - Sirf tab dikhega jab koi booking hogi */}
+                  {allBookings.length > 0 && (
+                    <button onClick={clearAllBookings} className="btn btn-sm btn-danger rounded-pill px-3 shadow-sm">
+                      🗑️ Delete All
+                    </button>
+                  )}
+                </div>
               </div>
               
-              {/* Yahan saari bookings loop (map) ho rahi hain */}
               <div style={{ maxHeight: "400px", overflowY: "auto", paddingRight: "5px" }}>
                 {allBookings.length > 0 ? (
                   allBookings.slice().reverse().map((booking, index) => (
