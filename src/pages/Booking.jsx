@@ -25,6 +25,23 @@ function Booking() {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 1. Nayi booking object banayein aur ek unique ID add karein
+    const newBooking = {
+      ...formData,
+      id: Date.now() 
+    };
+
+    // 2. LocalStorage se purani bookings nikalein (Agar pehli booking hai toh khali array [] aayega)
+    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+    // 3. Purani list mein nayi booking add karein
+    existingBookings.push(newBooking);
+
+    // 4. Update ki hui list wapas LocalStorage mein save karein
+    localStorage.setItem("bookings", JSON.stringify(existingBookings));
+
+    // 5. Success screen dikhayein
     setIsSubmitted(true);
   };
 
